@@ -13,10 +13,9 @@ import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 
 @Configuration
 public class ProjectConfig implements WebMvcConfigurer {
-
     /* Los siguientes métodos son para incorporar el tema de internacionalización en el proyecto */
-
- /* localeResolver se utiliza para crear una sesión de cambio de idioma*/
+    
+    /* localeResolver se utiliza para crear una sesión de cambio de idioma*/
     @Bean
     public LocaleResolver localeResolver() {
         var slr = new SessionLocaleResolver();
@@ -39,10 +38,10 @@ public class ProjectConfig implements WebMvcConfigurer {
         registro.addInterceptor(localeChangeInterceptor());
     }
 
-// Bean para poder acceder a los Messages.properties en código...
+    //Bean para poder acceder a los Messages.properties en código...
     @Bean("messageSource")
     public MessageSource messageSource() {
-        ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
+        ResourceBundleMessageSource messageSource= new ResourceBundleMessageSource();
         messageSource.setBasenames("messages");
         messageSource.setDefaultEncoding("UTF-8");
         return messageSource;
