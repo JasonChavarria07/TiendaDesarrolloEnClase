@@ -42,7 +42,7 @@ public class ProductoServiceImpl implements ProductoService {
         productoDao.delete(producto);
     }
 
-    // Lista de productos con precio entre ordendados por descripción ConsultaAmpliada
+    // Lista de productos con precio entre ordenados por descripción ConsultaAmpliada
     @Override
     @Transactional(readOnly = true)
     public List<Producto> findByPrecioBetweenOrderByDescripcion(double precioInf, double precioSup) {
