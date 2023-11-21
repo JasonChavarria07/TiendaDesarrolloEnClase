@@ -1,15 +1,15 @@
 package com.tienda;
 
 import java.util.Locale;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ResourceBundleMessageSource;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -19,11 +19,9 @@ import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 
 @Configuration
-public class ProjectConfig implements WebMvcConfigurer {
+public class ProyectConfig implements WebMvcConfigurer {
 
-    /* Los siguientes métodos son para incorporar el tema de internacionalización en el proyecto */
-
- /* localeResolver se utiliza para crear una sesión de cambio de idioma*/
+    /* Los siguientes métodos son para hacer uso de Internacionalización */
     @Bean
     public LocaleResolver localeResolver() {
         var slr = new SessionLocaleResolver();
@@ -33,8 +31,8 @@ public class ProjectConfig implements WebMvcConfigurer {
         return slr;
     }
 
-    /* localeChangeInterceptor se utiliza para crear un interceptor de cambio de idioma*/
     @Bean
+
     public LocaleChangeInterceptor localeChangeInterceptor() {
         var lci = new LocaleChangeInterceptor();
         lci.setParamName("lang");
@@ -46,8 +44,8 @@ public class ProjectConfig implements WebMvcConfigurer {
         registro.addInterceptor(localeChangeInterceptor());
     }
 
-    //Bean para poder acceder a los Messages.properties en código...
-    @Bean("messageSource")
+    /*Bean para utilizar los textos de mensajes en una clase Java*/
+    @Bean("messagesSource")
     public MessageSource messageSource() {
         ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
         messageSource.setBasenames("messages");
@@ -69,7 +67,7 @@ public class ProjectConfig implements WebMvcConfigurer {
         http
                 .authorizeHttpRequests((request) -> request
                 .requestMatchers("/", "/index", "/errores/**",
-                        "/carrito/**", "/pruebas/**", "/reportes/**",
+                        "/carrito/**", 
                         "/registro/**", "/js/**", "/webjars/**")
                 .permitAll()
                 .requestMatchers(
@@ -95,24 +93,36 @@ public class ProjectConfig implements WebMvcConfigurer {
         return http.build();
     }
 
-    /* El siguiente método se utiliza para completar la clase no es realmente funcional, la próxima semana se reemplaza con usuarios de BD */
-    @Bean
-    public UserDetailsService users() {
-        UserDetails admin = User.builder()
-                .username("juan")
-                .password("{noop}123")
-                .roles("USER", "VENDEDOR", "ADMIN")
-                .build();
-        UserDetails sales = User.builder()
-                .username("rebeca")
-                .password("{noop}456")
-                .roles("USER", "VENDEDOR")
-                .build();
-        UserDetails user = User.builder()
-                .username("pedro")
-                .password("{noop}789")
-                .roles("USER")
-                .build();
-        return new InMemoryUserDetailsManager(user, sales, admin);
+    /* El siguiente método se utiliza para completar la clase no es 
+    realmente funcional, la próxima semana se reemplaza con usuarios de BD */    
+//    @Bean
+//    public UserDetailsService users() {
+//        UserDetails admin = User.builder()
+//                .username("juan")
+//                .password("{noop}123")
+//                .roles("USER", "VENDEDOR", "ADMIN")
+//                .build();
+//        UserDetails sales = User.builder()
+//                .username("rebeca")
+//                .password("{noop}456")
+//                .roles("USER", "VENDEDOR")
+//                .build();
+//        UserDetails user = User.builder()
+//                .username("pedro")
+//                .password("{noop}789")
+//                .roles("USER")
+//                .build();
+//        return new InMemoryUserDetailsManager(user, sales, admin);
+//    }
+    
+    @Autowired
+   private UserDetailsService userDetailsService;
+    
+    @Autowired
+    public void configurerGlobal(AuthenticationManagerBuilder build)
+            throws Exception {
+        build
+                .userDetailsService(userDetailsService)
+                .passwordEncoder(new BCryptPasswordEncoder());
     }
 }
